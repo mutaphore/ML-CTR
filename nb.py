@@ -39,20 +39,20 @@ def parse_data(fname, train=True):
    
    
 if __name__ == '__main__':
-   f_train = 'trainsmall'
+   f_train = 'train1Mc'
    f_test = 'testc'
 
    print "Parsing data..."   
    X_train, Y_train = parse_data(f_train)
    X_test = parse_data(f_test, train=False)[0]
-      
    print "Training NB classifier..."
    clf = GaussianNB()
    clf.fit(X_train, Y_train)
+   score = clf.score(X_train, Y_train)
+   print "Score on train data %r " % score
 
    print "Predicting..."
    prob = clf.predict_proba(X_test)
-
    print "Writing probs..."
    f_out = open("nb_prob", 'w')
    for row in prob:

@@ -17,6 +17,11 @@ def clean_line(line, train=True):
    return ",".join(items)
 
 
+def comb_testprob():
+   f_in = open('test', 'r')
+   f_out = open('submission_nb.csv', 'w')
+   
+
 if __name__ == '__main__':
    f_in = open('test', 'r')
    f_out = open('testc', 'w')
