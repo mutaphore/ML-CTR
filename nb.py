@@ -2,6 +2,7 @@
 import os
 import sys
 import numpy as np
+import gc
 from sklearn.naive_bayes import GaussianNB
 
 def parse_x(items):
@@ -42,15 +43,21 @@ if __name__ == '__main__':
    f_train = 'train1Mc'
    f_test = 'testc'
 
-   print "Parsing data..."   
+   print "Parsing train data..."   
    X_train, Y_train = parse_data(f_train)
-   X_test = parse_data(f_test, train=False)[0]
    print "Training NB classifier..."
    clf = GaussianNB()
    clf.fit(X_train, Y_train)
    score = clf.score(X_train, Y_train)
    print "Score on train data %r " % score
 
+   # Free memory we don't use
+   X_train = None
+   Y_train = None
+   gc.collect()
+
+   print "Parsing test data..."   
+   X_test = parse_data(f_test, train=False)[0]
    print "Predicting..."
    prob = clf.predict_proba(X_test)
    print "Writing probs..."

@@ -1,0 +1,1 @@
+ssh -i carina.pem ubuntu@ec2-54-224-67-218.compute-1.amazonaws.com

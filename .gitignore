@@ -1,6 +1,8 @@
 .gitignore
 sampleSubmission
+*.swp
 *.pyc
+*.csv
 test*
 train*
 submission*
