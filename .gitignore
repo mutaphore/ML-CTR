@@ -1,4 +1,5 @@
 .gitignore
+sampleSubmission
 *.pyc
 test*
 train*
