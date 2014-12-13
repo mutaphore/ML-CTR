@@ -14,11 +14,10 @@ m = 40428967
 
 if __name__ == '__main__':
    f_in = open("train", 'r')
-   f_out = open("train1Mc", 'w')
-   samples = sorted(random.sample(xrange(m), 1000000))
-   #samples = sorted(random.sample(xrange(m), 10000))
-   
-   print "Done randomizing, writing to file..."   
+   f_out = open("trainsmall", 'w')
+   samples = sorted(random.sample(xrange(m), 10000))
+
+   print "Done randomizing, writing to file..."
 
    # Write header
    oheader = f_in.readline()

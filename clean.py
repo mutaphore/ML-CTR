@@ -1,6 +1,6 @@
 #!/usr/local/bin/python
 
-#  Data preprocessing utility functions
+#  Data pre/post processing utility functions
 #  By: Dewei Chen
 #
 #  Output filename convention: *c -> clean, *e -> encoded
@@ -13,24 +13,32 @@ from sklearn.preprocessing import OneHotEncoder
 nheader = 'click,day(0-6),hour(0-23),C1,banner_pos,site_id,site_domain,site_category,app_id,app_domain,app_category,device_id,device_ip,device_model,device_type,device_conn_type,C14,C15,C16,C17,C18,C19,C20,C21\n'
 sheader = 'id,click\n'
 
+# Given a line return an array of cleaned items
 def clean_line(line, train=True):
    if train:
       shift = 0
    else:
-      shift = 1   # Shift 1 for test data since we don't have the label column
+      shift = -1  # Shift 1 for test data since we don't have the label column
    items = line.split(',')
-   items.pop(0)   # Remove useless ID field
-   time = int(items[1 - shift])
-   items[1 - shift] = str(((time - 14100000) / 100 + 1) % 7)      # Day: Mon-Sun -> 0-6
-   items.insert(2 - shift, str(time % 100))                       # Hours: 0-23
+   # Convert hex strings to integers indices 5-13
+   for i in range(5, 14):
+      items[i + shift] = int(items[i + shift], 16)
+   # Remove useless ID field
+   items.pop(0)
+   # Split time field into Day and Hours fields
+   time = int(items[1 + shift])
+   items[1 + shift] = str(((time - 14100000) / 100 + 1) % 7) # Day Mon-Sun 0-6
+   items.insert(2 + shift, str(time % 100))                  # Hours: 0-23
+
    return ",".join(items)
 
 
+# Used for post processing nb.py output
 def combine_testprob():
    f_in1 = open('test', 'r')
    f_in2 = open('nb_prob', 'r')
    f_out = open('submission_nb.csv', 'w')
-   count = 0; 
+   count = 0;
 
    f_in1.readline()   # Skip header
    f_out.write(sheader)
@@ -59,7 +67,7 @@ def one_hot_encode():
    while line:
       mat.append([float(x) for x in line.split(',')])
       line = f_in.readline()
-   
+
    enc = OneHotEncoder(categorical_features=[5,6,7,8,9,10,11,12,13])
 
 def clean_test():
@@ -80,4 +88,3 @@ def clean_test():
 
 if __name__ == '__main__':
    combine_testprob()
-
