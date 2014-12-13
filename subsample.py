@@ -30,7 +30,6 @@ if __name__ == '__main__':
         line = f_in.readline()
         if count == samples[0]:
             del samples[0]
-            #line = clean_line(line)
             f_out.write(line)
             sys.stdout.write("Line %d \r" % count)
             sys.stdout.flush()

@@ -9,8 +9,8 @@ import os
 import sys
 from csv import DictReader
 
-import numpy as np
-from sklearn.preprocessing import OneHotEncoder
+#import numpy as np
+#from sklearn.preprocessing import OneHotEncoder
 
 nheader = 'click,day(0-6),hour(0-23),C1,banner_pos,site_id,site_domain,site_category,app_id,app_domain,app_category,device_id,device_ip,device_model,device_type,device_conn_type,C14,C15,C16,C17,C18,C19,C20,C21\n'
 sheader = 'id,click\n'
@@ -44,7 +44,6 @@ def data(path, D):
                 y = 1
             del row['click']
 
-
         time = int(row['hour'])
         day = ((time - 14100000) / 100 + 1) % 7     # Day Mon-Sun 0-6
         hour = time % 100                           # Hours: 0-23
@@ -59,27 +58,6 @@ def data(path, D):
             x.append(index)
 
         yield t, day, hour, ID, x, y
-
-
-# Given a line return an array of cleaned items
-def clean_line(line, train=True):
-    if train:
-        shift = 0
-    else:
-        shift = -1  # Shift 1 for test data since we don't have the label column
-    items = line.split(',')
-    # Convert hex strings to integers for indices 5-13
-    for i in range(5, 14):
-        items[i + shift] = str(abs(hash(items[i + shift] + '_')))
-        items[i + shift] = str(int(items[i + shift], 16))
-    # Remove useless ID field
-    items.pop(0)
-    # Split time field into Day and Hours fields
-    time = int(items[1 + shift])
-    items[1 + shift] = str(((time - 14100000) / 100 + 1) % 7) # Day Mon-Sun 0-6
-    items.insert(2 + shift, str(time % 100))                  # Hours: 0-23
-
-    return ",".join(items)
 
 
 # Used for post processing nb.py output
@@ -152,12 +130,13 @@ def clean_data(f_in, f_out, train=True):
             outfile.write(','.join(map(str, row)) + '\n')
             sys.stdout.write("Line %d \r" % count)
             sys.stdout.flush()
+            count += 1
 
 
 if __name__ == '__main__':
     #one_hot_encode()
-    train_in = 'train10k'
-    train_out = 'train10kc'
+    train_in = 'train1M'
+    train_out = 'train1Mc'
     test_in = 'test'
     test_out = 'testc'
     clean_data(train_in, train_out)
