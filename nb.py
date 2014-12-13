@@ -6,28 +6,28 @@ import gc
 from sklearn.naive_bayes import GaussianNB
 
 def parse_x(items):
-   x = []
-   for i, item in enumerate(items):
-      if i > 3 and i < 13: 
-         x.append(int(item, 16))
-      else:
-         x.append(int(item))    
-   return x
+    x = []
+    for i, item in enumerate(items):
+        if i > 3 and i < 13:
+            x.append(int(item, 16))
+        else:
+            x.append(int(item))
+    return x
 
 
 def parse_data(fname, train=True):
-   f_in = open(fname, 'r') 
-   Y = []
-   X = []
-   f_in.readline()   # Skip header
-   count = 0
+    f_in = open(fname, 'r')
+    Y = []
+    X = []
+    f_in.readline()   # Skip header
+    count = 0
 
-   line = f_in.readline()   # Skip header
+    line = f_in.readline()   # Skip header
    while line:
       items = line.split(',')
       if train:
          Y.append(int(items[0]))
-         X.append(parse_x(items[1:]))  
+         X.append(parse_x(items[1:]))
       else:
          X.append(parse_x(items))
       line = f_in.readline()
@@ -37,13 +37,13 @@ def parse_data(fname, train=True):
 
    f_in.close()
    return X, Y
-   
-   
+
+
 if __name__ == '__main__':
    f_train = 'train1Mc'
    f_test = 'testc'
 
-   print "Parsing train data..."   
+   print "Parsing train data..."
    X_train, Y_train = parse_data(f_train)
    print "Training NB classifier..."
    clf = GaussianNB()
@@ -56,12 +56,12 @@ if __name__ == '__main__':
    Y_train = None
    gc.collect()
 
-   print "Parsing test data..."   
+   print "Parsing test data..."
    X_test = parse_data(f_test, train=False)[0]
    print "Predicting..."
    prob = clf.predict_proba(X_test)
    print "Writing probs..."
    f_out = open("nb_prob", 'w')
    for row in prob:
-      f_out.write(str(row[0]) + '\n')
+       f_out.write(str(row[0]) + '\n')
    f_out.close()
