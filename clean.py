@@ -7,11 +7,59 @@
 
 import os
 import sys
+from csv import DictReader
 
-#from sklearn.preprocessing import OneHotEncoder
+import numpy as np
+from sklearn.preprocessing import OneHotEncoder
 
 nheader = 'click,day(0-6),hour(0-23),C1,banner_pos,site_id,site_domain,site_category,app_id,app_domain,app_category,device_id,device_ip,device_model,device_type,device_conn_type,C14,C15,C16,C17,C18,C19,C20,C21\n'
 sheader = 'id,click\n'
+
+D = 2 ** 20             # number of weights to use
+
+def data(path, D):
+    ''' GENERATOR: Apply hash-trick to the original csv row
+                   and for simplicity, we one-hot-encode everything
+
+        INPUT:
+            path: path to training or testing file
+            D: the max index that we can hash to
+
+        YIELDS:
+            ID: id of the instance, mainly useless
+            x: a list of hashed and one-hot-encoded 'indices'
+               we only need the index since all values are either 0 or 1
+            y: y = 1 if we have a click, else we have y = 0
+    '''
+
+    for t, row in enumerate(DictReader(open(path))):
+        # process id
+        ID = row['id']
+        del row['id']
+
+        # process clicks
+        y = 0
+        if 'click' in row:
+            if row['click'] == '1':
+                y = 1
+            del row['click']
+
+
+        time = int(row['hour'])
+        day = ((time - 14100000) / 100 + 1) % 7     # Day Mon-Sun 0-6
+        hour = time % 100                           # Hours: 0-23
+
+        # build x
+        x = []
+        for key in row:
+            value = row[key]
+
+            # one-hot encode everything with hash trick
+            index = abs(hash(key + '_' + value)) % D
+            x.append(index)
+
+        yield t, day, hour, ID, x, y
+
 
 # Given a line return an array of cleaned items
 def clean_line(line, train=True):
@@ -20,8 +68,9 @@ def clean_line(line, train=True):
     else:
         shift = -1  # Shift 1 for test data since we don't have the label column
     items = line.split(',')
-    # Convert hex strings to integers indices 5-13
+    # Convert hex strings to integers for indices 5-13
     for i in range(5, 14):
+        items[i + shift] = str(abs(hash(items[i + shift] + '_')))
         items[i + shift] = str(int(items[i + shift], 16))
     # Remove useless ID field
     items.pop(0)
@@ -57,39 +106,58 @@ def combine_testprob():
     f_out.close()
 
 
+# Read in the data file and outputs a file containing the encodings, we do
+# this as a separate step because we can't read in all the values to memory
 def one_hot_encode():
-    f_in = open('trainsmall', 'r')
-    f_out = open('trainsmalle', 'w')
+    f_in = open('train10kc', 'r')
+    f_out = open('encoding', 'w')
+    mat = []
+    count = 0
 
+    # Read in the matrix
     f_in.readline()   # Skip header
     line = f_in.readline()
-    mat = []
     while line:
-        mat.append([float(x) for x in line.split(',')])
-        line = f_in.readline()
-    enc = OneHotEncoder(categorical_features=[5,6,7,8,9,10,11,12,13])
-
-
-def clean_data(train=True):
-    if train:
-        f_in = open('train1M', 'r')
-        f_out = open('train1Mc', 'w')
-    else:
-        f_in = open('test', 'r')
-        f_out = open('testc', 'w')
-
-    count = 0
-    f_in.readline()
-    f_out.write(nheader)
-    line = f_in.readline()
-    while line:
-        line = clean_line(line, train=train)
-        f_out.write(line)
+        row = [float(x)/100000 for x in line.split(',')]
+        mat.append(row[5:14])
         line = f_in.readline()
         sys.stdout.write("Line %d \r" % count)
         sys.stdout.flush()
         count += 1
 
+    print "Done generating matrix, encoding..."
+
+    # Encode it and write to file
+    enc = OneHotEncoder(dtype=np.integer)
+    enc.fit(mat)
+
+    print enc.n_values_
+    print enc.feature_indices_
+
+    enc_mat = enc.transform(mat).toarray()
+    for i, row in enumerate(enc_mat):
+        f_out.write(''.join(map(str, row)) + '\n')
+        sys.stdout.write("Line %d \r" % i)
+        sys.stdout.flush()
+
+
+def clean_data(f_in, f_out, train=True):
+    with open(f_out, 'w') as outfile:
+        outfile.write(nheader)
+        count = 0
+        for t, day, hour, ID, x, y in data(f_in, D):  # data is a generator
+            row =  [day, hour] + x
+            if train:
+                row.insert(0, y)
+            outfile.write(','.join(map(str, row)) + '\n')
+            sys.stdout.write("Line %d \r" % count)
+            sys.stdout.flush()
+
 
 if __name__ == '__main__':
-    clean_data(train=True)
+    #one_hot_encode()
+    train_in = 'train10k'
+    train_out = 'train10kc'
+    test_in = 'test'
+    test_out = 'testc'
+    clean_data(train_in, train_out)

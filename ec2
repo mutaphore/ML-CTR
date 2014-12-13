@@ -1,2 +1,4 @@
-# ssh -i carina.pem ubuntu@ec2-54-224-67-218.compute-1.amazonaws.com
-ssh -i ec2key.pem ec2-user@ec2-54-85-92-29.compute-1.amazonaws.com
+ssh -i carina.pem ubuntu@ec2-54-82-180-58.compute-1.amazonaws.com
+#ssh -i ec2key.pem ec2-user@ec2-54-85-92-29.compute-1.amazonaws.com  # Dewei
+#ssh -i ec2key.pem ec2-user@54.164.68.210
+#ssh -i ec2key.pem ubuntu@ec2-54-165-67-224.compute-1.amazonaws.com
