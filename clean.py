@@ -1,6 +1,14 @@
 #!/usr/local/bin/python
+
+#  Data preprocessing utility functions
+#  By: Dewei Chen
+#
+#  Output filename convention: *c -> clean, *e -> encoded
+
 import os
 import sys
+
+from sklearn.preprocessing import OneHotEncoder
 
 nheader = 'click,day(0-6),hour(0-23),C1,banner_pos,site_id,site_domain,site_category,app_id,app_domain,app_category,device_id,device_ip,device_model,device_type,device_conn_type,C14,C15,C16,C17,C18,C19,C20,C21\n'
 sheader = 'id,click\n'
@@ -9,7 +17,7 @@ def clean_line(line, train=True):
    if train:
       shift = 0
    else:
-      shift = 1
+      shift = 1   # Shift 1 for test data since we don't have the label column
    items = line.split(',')
    items.pop(0)   # Remove useless ID field
    time = int(items[1 - shift])
@@ -39,6 +47,20 @@ def combine_testprob():
    f_in1.close()
    f_in2.close()
    f_out.close()
+
+
+def one_hot_encode():
+   f_in = open('trainsmall', 'r')
+   f_out = open('trainsmalle', 'w')
+
+   f_in.readline()   # Skip header
+   line = f_in.readline()
+   mat = []
+   while line:
+      mat.append([float(x) for x in line.split(',')])
+      line = f_in.readline()
+   
+   enc = OneHotEncoder(categorical_features=[5,6,7,8,9,10,11,12,13])
 
 def clean_test():
    f_in = open('test', 'r')
