@@ -1,5 +1,5 @@
-#ssh -i carina.pem ubuntu@ec2-54-82-180-58.compute-1.amazonaws.com
+ssh -i carina.pem ubuntu@54.237.157.157
 #scp -i carina.pem ubuntu@ec2-54-82-180-58.compute-1.amazonaws.com:submission_nb1M.csv .
-ssh -i ec2key.pem ubuntu@ec2-54-174-253-91.compute-1.amazonaws.com
+#ssh -i ec2key.pem ubuntu@ec2-54-174-253-91.compute-1.amazonaws.com
 #ssh -i ec2key.pem ec2-user@54.164.68.210
 #ssh -i ec2key.pem ubuntu@ec2-54-165-67-224.compute-1.amazonaws.com

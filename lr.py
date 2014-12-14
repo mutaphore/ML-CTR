@@ -1,6 +1,7 @@
 #!/usr/local/bin/python
 
 from sklearn.linear_model import LogisticRegression
+from sklearn.cross_validation import train_test_split
 
 from clean import parse_data
 
@@ -15,6 +16,9 @@ if __name__ == '__main__':
     print "Training Logistic Regression classifier..."
     clf = LogisticRegression()
     clf.fit(X_train, Y_train)
+    print "Cross validating..."
+    data = zip(x_train, Y_train)
+
     score = clf.score(X_train, Y_train)
     print "Score on train data %r " % score
 

@@ -1,7 +1,8 @@
 from datetime import datetime
 from csv import DictReader
 from math import exp, log, sqrt
-
+import sys
+import argparse
 
 # TL; DR, the main training process starts on line: 250,
 # you may want to start reading the code from there
@@ -12,7 +13,7 @@ from math import exp, log, sqrt
 ##############################################################################
 
 # A, paths
-train = 'train1M'               # path to training file
+train = 'train'               # path to training file
 test = 'test'                 # path to testing file
 submission = 'submission_fast.csv'  # path of to be outputted submission file
 
@@ -230,7 +231,31 @@ def data(path, D):
 # start training #############################################################
 ##############################################################################
 
+parser = argparse.ArgumentParser()
+parser.add_argument('-l1', dest='L1')
+parser.add_argument('-l2', dest='L2')
+parser.add_argument('-d', dest='D')
+parser.add_argument('-e', dest='epoch')
+parser.add_argument('-s', dest='submission')
+args = parser.parse_args()
+
+if args.L1:
+    L1 = float(args.L1)
+if args.L2:
+    L2 = float(args.L2)
+if args.D:
+    D = int(args.D)
+if args.epoch:
+    epoch = int(args.epoch)
+if args.submission:
+    submission = args.submission
+
+print "Running with parameters: L1 %d L2 %d D %d epoch %d submission: %s" % (L1, L2, D, epoch, submission)
+
 start = datetime.now()
+
+print "Starting"
+print start
 
 # initialize ourselves a learner
 learner = ftrl_proximal(alpha, beta, L1, L2, D, interaction)
@@ -257,7 +282,7 @@ for e in xrange(epoch):
             #
             # holdafter: train instances from day 1 to day N
             #            validate with instances from day N + 1 and after
-            #
+
             # holdout: validate with every N instance, train with others
             loss += logloss(p, y)
             count += 1
