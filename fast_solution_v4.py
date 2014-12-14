@@ -250,7 +250,7 @@ if args.epoch:
 if args.submission:
     submission = args.submission
 
-print "Running with parameters: L1 %d L2 %d D %d epoch %d submission: %s" % (L1, L2, D, epoch, submission)
+print "Running with parameters: L1 %f L2 %f D %d epoch %d submission: %s" % (L1, L2, D, epoch, submission)
 
 start = datetime.now()
 

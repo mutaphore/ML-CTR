@@ -61,18 +61,25 @@ def data(path, D):
 
 
 # Parses a file and returns X and Y vectors
-def parse_data(fname):
+def parse_data(fname, combine=False):
     Y = []
     X = []
+    YX = []
     count = 0
 
     for t, day, hour, ID, x, y in data(fname, D):  # data is a generator
-        X.append(x)
-        Y.append(y)
+        if combine:
+            YX.append([y] + x)
+        else:
+            X.append(x)
+            Y.append(y)
         sys.stdout.write("Line %d \r" % count)
         sys.stdout.flush()
         count += 1
-    return X, Y
+    if combine:
+        return YX
+    else:
+        return X, Y
 
 
 # Used for post processing nb.py output
