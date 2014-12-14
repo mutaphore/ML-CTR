@@ -60,11 +60,26 @@ def data(path, D):
         yield t, day, hour, ID, x, y
 
 
+# Parses a file and returns X and Y vectors
+def parse_data(fname):
+    Y = []
+    X = []
+    count = 0
+
+    for t, day, hour, ID, x, y in data(fname, D):  # data is a generator
+        X.append(x)
+        Y.append(y)
+        sys.stdout.write("Line %d \r" % count)
+        sys.stdout.flush()
+        count += 1
+    return X, Y
+
+
 # Used for post processing nb.py output
-def combine_testprob():
-    f_in1 = open('test', 'r')
-    f_in2 = open('nb_prob', 'r')
-    f_out = open('submission_nb.csv', 'w')
+def combine_testprob(test_in, prob, sub_file):
+    f_in1 = open(test_in, 'r')
+    f_in2 = open(prob, 'r')
+    f_out = open(sub_file, 'w')
     count = 0;
 
     f_in1.readline()   # Skip header
@@ -118,7 +133,7 @@ def one_hot_encode():
         sys.stdout.write("Line %d \r" % i)
         sys.stdout.flush()
 
-
+# Clean data
 def clean_data(f_in, f_out, train=True):
     with open(f_out, 'w') as outfile:
         outfile.write(nheader)
@@ -132,11 +147,33 @@ def clean_data(f_in, f_out, train=True):
             sys.stdout.flush()
             count += 1
 
+# Clean data and output format accepted by libsvm
+def clean_data_svm(f_in, f_out, train=True):
+    with open(f_out, 'w') as outfile:
+        count = 0
+        for t, day, hour, ID, x, y in data(f_in, D):  # data is a generator
+            row = []
+            for i, item in enumerate(x, start=1):
+                row.append(str(i) + ":" + str(item))
+            if train:
+                row = [str(y)] + row
+            outfile.write(' '.join(row) + '\n')
+            sys.stdout.write("Line %d \r" % count)
+            sys.stdout.flush()
+            count += 1
+
 
 if __name__ == '__main__':
     #one_hot_encode()
     train_in = 'train1M'
     train_out = 'train1Mc'
+    train_out_svm = 'train1M_svm'
     test_in = 'test'
     test_out = 'testc'
-    clean_data(train_in, train_out)
+    test_out_svm = 'test_svm'
+    lr_prob = 'lr_prob'
+    sub_file = 'submission_lr.csv'
+    #clean_data(train_in, train_out)
+    clean_data_svm(test_in, test_out_svm, train=False)
+    #clean_data_svm(test_in, test_out_svm)
+    # combine_testprob(test_in, lr_prob, sub_file)

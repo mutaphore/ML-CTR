@@ -6,23 +6,7 @@ import gc
 import numpy as np
 from sklearn.naive_bayes import GaussianNB
 
-from clean import data
-
-D = 2 ** 20             # number of weights to use
-
-def parse_data(fname):
-    Y = []
-    X = []
-    count = 0
-
-    for t, day, hour, ID, x, y in data(fname, D):  # data is a generator
-        X.append(x)
-        Y.append(y)
-        sys.stdout.write("Line %d \r" % count)
-        sys.stdout.flush()
-        count += 1
-    return X, Y
-
+from clean import parse_data
 
 if __name__ == '__main__':
     f_train = 'train10k'

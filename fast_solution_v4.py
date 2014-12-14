@@ -1,19 +1,3 @@
-'''
-WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-                   Version 2, December 2004
-
-Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
-
-Everyone is permitted to copy and distribute verbatim or modified
-copies of this license document, and changing it is allowed as long
-as the name is changed.
-
-           DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-  TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-
- 0. You just DO WHAT THE FUCK YOU WANT TO.
-'''
-
 from datetime import datetime
 from csv import DictReader
 from math import exp, log, sqrt
@@ -281,6 +265,10 @@ for e in xrange(epoch):
             # step 2-2, update learner with label (click) information
             learner.update(x, p, y)
 
+        # Display progress
+        sys.stdout.write("Line %d \r" % t)
+        sys.stdout.flush()
+
     print('Epoch %d finished, validation logloss: %f, elapsed time: %s' % (
         e, loss/count, str(datetime.now() - start)))
 
@@ -294,4 +282,3 @@ with open(submission, 'w') as outfile:
     for t, date, ID, x, y in data(test, D):
         p = learner.predict(x)
         outfile.write('%s,%s\n' % (ID, str(p)))
-

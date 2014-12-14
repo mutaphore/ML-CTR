@@ -7,3 +7,6 @@ test*
 train*
 submission*
 nb_prob
+predict*
+libsvm*
+liblinear*
