@@ -6,3 +6,6 @@ Submission score of test1M on Kaggle
 
 Submission score of lr10k on Kaggle, pure logistic regression
 1.6202496
+
+Submission score of l1 = 0 l2 = 20 on Kaggle
+0.3977899

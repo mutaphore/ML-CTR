@@ -169,6 +169,20 @@ def clean_data_svm(f_in, f_out, train=True):
             sys.stdout.flush()
             count += 1
 
+# Clean the predict file outputted by libsvm
+def clean_pred_svm(f_in, f_out):
+    infile = open(f_in, 'r')
+    outfile = open(f_out, 'w')
+
+    infile.readline()   # Skip header
+    outfile.write(sheader)
+    for t, row in enumerate(DictReader(open('test'))):
+        line = infile.readline()
+        pred = line.split(' ')[2]
+        outfile.write(row['id'] + ',' + pred)
+        sys.stdout.write("Line %d \r" % t)
+        sys.stdout.flush()
+
 
 if __name__ == '__main__':
     #one_hot_encode()
@@ -181,6 +195,7 @@ if __name__ == '__main__':
     lr_prob = 'lr_prob'
     sub_file = 'submission_lr.csv'
     #clean_data(train_in, train_out)
-    clean_data_svm(test_in, test_out_svm, train=False)
+    #clean_data_svm(test_in, test_out_svm, train=False)
     #clean_data_svm(test_in, test_out_svm)
-    # combine_testprob(test_in, lr_prob, sub_file)
+    #combine_testprob(test_in, lr_prob, sub_file)
+    clean_pred_svm('train10k_svm.scaled.predict', 'submission_svm.csv')

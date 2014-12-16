@@ -6,21 +6,21 @@ from sklearn.cross_validation import train_test_split
 
 from clean import parse_data
 
-D = 2 ** 20             # number of weights to use
-
 if __name__ == '__main__':
-    f_train = 'train10k'
+    f_train = 'train1M'
     f_test = 'test'
 
     print "Parsing data..."
     YX = parse_data(f_train, combine=True)
-    YX_train, YX_test = train_test_split(YX, test_size=0.1, random_state=42)
+    YX_train, YX_test = train_test_split(YX, test_size=0.1,
+        random_state=42)
+        # random_state=np.random.random_integers(100000))
     X_train = np.array(YX_train)[:,1:]
     Y_train = np.array(YX_train)[:,0]
     X_test = np.array(YX_test)[:,1:]
     Y_test = np.array(YX_test)[:,0]
     print "Training Logistic Regression classifier..."
-    clf = LogisticRegression()
+    clf = LogisticRegression(penalty='l2')
     clf.fit(X_train, Y_train)
     print "Cross validating..."
     score = clf.score(X_test, Y_test)
